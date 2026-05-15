@@ -3,7 +3,7 @@
 # - imagePullPolicy: IfNotPresent で、各ノードに import 済みのイメージを優先利用。
 # - startupProbe で Prisma migrate 完了までを猶予し、その後 readiness/liveness に切替。
 apiVersion: apps/v1
-kind: Dployement
+kind: Deployment
 metadata:
   name: counter
   namespace: count-down-up-days
