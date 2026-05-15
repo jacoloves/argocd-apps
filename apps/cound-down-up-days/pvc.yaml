@@ -1,0 +1,16 @@
+# SQLite (/app/data/app.db) を永続化するための PVC。
+# - storageClassName: longhorn → 既存の Longhorn(v1.7.2) で動的プロビジョニング
+# - ReadWriteOnce: 単一 Pod のみマウント (SQLite はマルチライター不可)
+# - 1Gi: SQLite + WAL + 余裕。後でオンライン拡張可能。
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: counter-data
+  namespace: count-down-up-days
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi

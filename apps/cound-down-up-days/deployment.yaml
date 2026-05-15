@@ -1,0 +1,69 @@
+# count-down-up-days 本体。
+# - replicas: 1 + strategy.Recreate で SQLite シングルライターを強制する。
+# - imagePullPolicy: IfNotPresent で、各ノードに import 済みのイメージを優先利用。
+# - startupProbe で Prisma migrate 完了までを猶予し、その後 readiness/liveness に切替。
+apiVersion: apps/v1
+kind: Dployement
+metadata:
+  name: counter
+  namespace: count-down-up-days
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: counter
+  template:
+    metadata:
+      labels:
+        app: counter
+    spec:
+      containers:
+        - name: app
+          image: count-down-up-days:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              value: "file:/app/data/app.db"
+            - name: STATIC_ROOT
+              value: "../web/dist"
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: counter-data
+

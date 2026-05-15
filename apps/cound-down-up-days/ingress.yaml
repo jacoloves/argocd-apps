@@ -1,0 +1,26 @@
+# 既存の Nginx Ingress Controller + cert-manager パターンに合わせる。
+# Nextcloud の ingress.yaml と同じアノテーションで TLS を取得する。
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: counter
+  namespace: count-down-up-days
+  annotations:
+    cert-manager.io/cluster-issuer: k3s-local-ca-issuer
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - counter.k3s.local
+      secretName: counter-tls
+  rules:
+    - host: counter.k3s.local
+      http:
+        paths:
+          - paths: /
+            pathType: Prefix
+            backend:
+              service:
+                name: counter
+                port:
+                  number: 3000
