@@ -58,10 +58,14 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 128Mi
+              # Node + Prisma + better-sqlite3 の定常 RSS 想定値。
+              # 128Mi だとスケジューラに楽観的すぎる値を伝えてノードのオーバーコミットを誘発するため引き上げ。
+              memory: 256Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              # 起動時ピーク (Node ランタイム + Prisma query engine + better-sqlite3 ネイティブ) を吸収する余裕値。
+              # 512Mi 時代は `prisma migrate deploy` の起動約 5 秒で OOMKilled (Exit 137) になっていた。
+              memory: 1Gi
       volumes:
         - name: data
           persistentVolumeClaim:
