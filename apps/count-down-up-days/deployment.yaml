@@ -8,7 +8,9 @@ metadata:
   name: counter
   namespace: count-down-up-days
 spec:
-  replicas: 1
+  # 一時塩漬け中。replicas: 0 で Pod を起こさない。PVC/Service/Ingress は宣言として残す。
+  # 復帰時は 1 に戻す。strategy: Recreate は SQLite シングルライター制約のため据え置き。
+  replicas: 0
   strategy:
     type: Recreate
   selector:

@@ -13,8 +13,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: count-down-up-days
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    # 一時塩漬け中。auto-sync を意図的に外し、手動同期モードにしている。
+    # 復帰時は automated.prune/selfHeal を元のテンプレに戻して `argocd app sync` を 1 回叩く。
     syncOptions:
       - CreateNamespace=true
