@@ -1,0 +1,13 @@
+# SQLite (/data/bulletin.db) 永続化用。Longhorn・RWO（単一 Pod のみマウント）。
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bulletin-data
+  namespace: bulletin
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi

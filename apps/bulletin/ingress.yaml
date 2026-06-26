@@ -1,0 +1,33 @@
+# Nginx Ingress + cert-manager(Let's Encrypt / DNS-01 Cloudflare)。/api→backend, /→frontend の同一オリジン。
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bulletin
+  namespace: bulletin
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cloudflare
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - bulletin.shooonng.com
+      secretName: bulletin-tls
+  rules:
+    - host: bulletin.shooonng.com
+      http:
+        paths:
+          # より具体的な /api を先に（backend へ。リライト無し＝/api/... をそのまま転送）
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: bulletin-backend
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bulletin-frontend
+                port:
+                  number: 80

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulletin-frontend
+  namespace: bulletin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bulletin-frontend
+  template:
+    metadata:
+      labels:
+        app: bulletin-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: bulletin-frontend:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

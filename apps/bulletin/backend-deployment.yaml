@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulletin-backend
+  namespace: bulletin
+spec:
+  replicas: 1
+  # SQLite シングルライターのため Recreate（新旧 Pod が同時に DB を掴まない）
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bulletin-backend
+  template:
+    metadata:
+      labels:
+        app: bulletin-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001          # Longhorn ボリュームを uid/gid 10001 で書けるように
+      containers:
+        - name: backend
+          image: bulletin-backend:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: DATABASE_URL
+              value: /data/bulletin.db
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          # 起動時マイグレーション完了までを startupProbe で猶予
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: bulletin-data
