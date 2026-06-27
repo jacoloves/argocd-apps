@@ -15,4 +15,5 @@ data:
         originRequest:
           # Ingress の証明書は bulletin.shooonng.com 用なので Host/SNI を合わせる
           httpHostHeader: bulletin.shooonng.com
+          originServerName: bulletin.shooonng.com
       - service: http_status:404
