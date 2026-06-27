@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bulletin-tunnel-config
+  namespace: cloudflare
+data:
+  config.yaml: |
+    tunnel: 3f55d9da-1471-4084-82ab-6418e83c361b
+    credentials-file: /etc/cloudflared/credentials.json
+    # メトリクス(任意。liveness 用に使える)
+    metrics: 0.0.0.0:2000
+    ingress:
+      - hostname: bulletin.shooonng.com
+        service: https://ingress-nginx-controller.ingress-nginx.svc:443
+        originRequest:
+          # Ingress の証明書は bulletin.shooonng.com 用なので Host/SNI を合わせる
+          httpHostHeader: bulletin.shooonng.com
+      - service: http_status:404
