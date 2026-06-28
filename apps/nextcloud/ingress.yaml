@@ -10,10 +10,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - nextcloud.k3s.local
+        - nextcloud.shooonng.com
       secretName: nextcloud-tls
   rules:
-    - host: nextcloud.k3s.local
+    - host: nextcloud.shooonng.com
       http:
         paths:
           - path: /

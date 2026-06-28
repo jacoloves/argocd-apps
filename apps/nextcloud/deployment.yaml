@@ -29,7 +29,7 @@ spec:
                   name: nextcloud-secret
                   key: admin-password
             - name: NEXTCLOUD_TRUSTED_DOMAINS
-              value: "nextcloud.k3s.local"
+              value: "nextcloud.shooonng.com"
           volumeMounts:
             - name: data
               mountPath: /var/www/html
