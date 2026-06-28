@@ -28,9 +28,13 @@ spec:
               containerPort: 3000
               protocol: TCP
           env:
-            # 0.9.x 以降、ホスト検証が厳格化。アクセスするホスト名を明示する
+            # 0.9.x 以降ホスト検証が厳格化。kubelet の probe は Pod IP
+            # (例 10.42.0.72:3000) で叩くため、列挙方式だと probe が 400 で
+            # 失敗し CrashLoop する。内部限定 & ingress 配下なので * で全許可。
+            # ホストを絞りたい場合は probe の Pod IP も含める必要がある
+            # （Pod IP は動的なので現実的でない → * 推奨）。
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "home.shooonng.com,192.168.3.201"
+              value: "*"
           livenessProbe:
             httpGet:
               path: /api/healthcheck
