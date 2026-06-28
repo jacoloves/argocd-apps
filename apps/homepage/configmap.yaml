@@ -14,11 +14,15 @@ data:
   settings.yaml: |
     title: shooonng homelab
     # K8s 連携で自動検出したサービスを services.yaml の上に出す
-    headerStyle: clean
+    theme: dark              # dark / light
+    color: slate             # slate, gray, zinc, neutral, stone...
+    headerStyle: boxed       # clean / boxed / underlined / boxedWidgets
     layout:
-      Cluster:
+      Infra:
         style: row
         columns: 3
+      Apps:
+        style: column
 
   # ノード/クラスタのリソースウィジェット
   widgets.yaml: |
@@ -39,6 +43,16 @@ data:
         expanded: true
         cpu: true
         memory: true
+    - datetime:
+      text_size: xl
+      format:
+        timeStyle: short
+        dateStyle: long
+    - openmeteo:                    # 無料・APIキー不要の天気
+      latitude: 35.54               # 六郷土手あたり
+      longitude: 139.70
+      units: metric
+      cache: 5
     - search:
         provider: duckduckgo
         target: _blank
@@ -49,18 +63,22 @@ data:
         - ArgoCD:
             href: https://argocd.k3s.local
             description: GitOps
+            icon: argo-cd.png
         - Longhorn:
             href: https://longhorn.k3s.local
             description: Storage
+            icon: longhorn.png
         - Grafana:
             href: https://grafana.k3s.local
             description: Dashboards
+            icon: grafana.png
 
   bookmarks.yaml: |
     - Developer:
         - GitHub:
             - abbr: GH
               href: https://github.com/jacoloves/argocd-apps
+              icon: github.png
 
   # K8s 連携時も空ファイルとしてマウントが必要なもの
   docker.yaml: ""
