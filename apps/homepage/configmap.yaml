@@ -1,0 +1,68 @@
+# homepage の設定ファイル群を ConfigMap として供給
+# /app/config 配下に subPath マウントされる
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+
+  settings.yaml: |
+    title: shooonng homelab
+    # K8s 連携で自動検出したサービスを services.yaml の上に出す
+    headerStyle: clean
+    layout:
+      Cluster:
+        style: row
+        columns: 3
+
+  # ノード/クラスタのリソースウィジェット
+  widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: cluster
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        backend: kubernetes
+        expanded: true
+        cpu: true
+        memory: true
+    - search:
+        provider: duckduckgo
+        target: _blank
+
+  # 静的なサービスリンク（自動検出と併用可）
+  services.yaml: |
+    - Infra:
+        - ArgoCD:
+            href: https://argocd.k3s.local
+            description: GitOps
+        - Longhorn:
+            href: https://longhorn.k3s.local
+            description: Storage
+        - Grafana:
+            href: https://grafana.k3s.local
+            description: Dashboards
+
+  bookmarks.yaml: |
+    - Developer:
+        - GitHub:
+            - abbr: GH
+              href: https://github.com/jacoloves/argocd-apps
+
+  # K8s 連携時も空ファイルとしてマウントが必要なもの
+  docker.yaml: ""
+  custom.css: ""
+  custom.js: ""

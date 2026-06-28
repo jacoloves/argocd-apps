@@ -1,0 +1,24 @@
+# ArgoCD Application: jacoloves/argocd-apps の apps/homepage を同期
+# 配置場所はリポジトリの App-of-Apps 構成に合わせて調整（例: apps/argocd/ など）
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jacoloves/argocd-apps.git
+    targetRevision: master
+    path: apps/homepage
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

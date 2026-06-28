@@ -1,0 +1,61 @@
+# === 内部公開: 2つの選択肢。どちらか一方を使う ===
+#
+# --- 選択肢A: ingress-nginx 経由（bulletin と同じ流儀） ---
+# LAN 内 DNS で home.shooonng.com を ingress-nginx の MetalLB VIP に向ける。
+# TLS が欲しければ cert-manager の Issuer を bulletin と同様に付与。
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations:
+    # 内部限定なので cert-manager は任意。付けるなら bulletin と同じ Issuer を指定
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: home.shooonng.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage
+                port:
+                  number: 3000
+  # TLS を付けるなら以下のコメントを外す
+  # tls:
+  #   - hosts:
+  #       - home.shooonng.com
+  #     secretName: homepage-tls
+#
+# --- 選択肢B: MetalLB LoadBalancer 直結（専用IP） ---
+# ingress を経由せず、homepage 専用の LAN IP を割り当てる。
+# 選択肢A を使うなら下記の Service は適用しない（Service は deployment.yaml 側の
+# ClusterIP のままでよい）。Bを使う場合は deployment.yaml の Service を
+# 削除するか、こちらに置き換える。
+#
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: homepage-lb
+#   namespace: homepage
+#   labels:
+#     app.kubernetes.io/name: homepage
+#   annotations:
+#     metallb.universe.tf/loadBalancerIPs: 192.168.3.201
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app.kubernetes.io/name: homepage
+#   ports:
+#     - name: http
+#       port: 80
+#       targetPort: http
+#       protocol: TCP
