@@ -38,24 +38,34 @@ data:
           cpu: true
           memory: true
           showLabel: true
+
     - resources:
         backend: kubernetes
         expanded: true
         cpu: true
         memory: true
-    - datetime:
-      text_size: xl
-      format:
-        timeStyle: short
-        dateStyle: long
-    - openmeteo:                    # 無料・APIキー不要の天気
-      latitude: 35.54               # 六郷土手あたり
-      longitude: 139.70
-      units: metric
-      cache: 5
+
     - search:
         provider: duckduckgo
         target: _blank
+
+    - datetime:
+        text_size: xl
+        locale: ja-JP
+        format:
+          timeStyle: short
+          dateStyle: long
+          hourCycle: h23
+
+    - openmeteo:
+        label: 六郷土手
+        latitude: 35.54
+        longitude: 139.70
+        timezone: Asia/Tokyo
+        units: metric
+        cache: 5
+        format:
+          maximumFractionDigits: 1
 
   # 静的なサービスリンク（自動検出と併用可）
   services.yaml: |
@@ -77,7 +87,7 @@ data:
     - Developer:
         - GitHub:
             - abbr: GH
-              href: https://github.com/jacoloves/argocd-apps
+              href: https://github.com/jacoloves
               icon: github.png
 
   # K8s 連携時も空ファイルとしてマウントが必要なもの
