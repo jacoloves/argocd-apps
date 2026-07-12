@@ -11,6 +11,8 @@ resources:
 # デプロイするイメージタグはここで一元管理（更新時はこの newTag を変えて push）
 images:
   - name: bulletin-backend
-    newTag: "0.1.0"
+    newName: ghcr.io/jacoloves/bulletin-backend
+    newTag: "sha-b3e52fd"
   - name: bulletin-frontend
-    newTag: "0.1.0"
+    newName: ghcr.io/jacoloves/bulletin-frontend
+    newTag: "sha-b3e52fd"
