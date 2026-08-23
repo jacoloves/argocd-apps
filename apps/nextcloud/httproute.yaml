@@ -1,0 +1,38 @@
+# 共有 Gateway に乗り入れる。
+# TLS はワイルドカード証明書で Gateway 側が終端するため、
+# アプリごとの Certificate と cert-manager の注釈は不要になった。
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  parentRefs:
+    - name: shared-gateway
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - nextcloud.shooonng.com
+  rules:
+    - backendRefs:
+        - name: nextcloud
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nextcloud-redirect
+  namespace: nextcloud
+spec:
+  parentRefs:
+    - name: shared-gateway
+      namespace: gateway
+      sectionName: http
+  hostnames:
+    - nextcloud.shooonng.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
