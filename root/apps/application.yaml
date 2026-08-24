@@ -1,0 +1,21 @@
+# すべての Application を束ねるルート。
+# これ1つを適用すれば配下のアプリが順次同期される。
+# 個別の application.yaml を手で適用する運用をやめるための入口。
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jacoloves/argocd-apps.git
+    targetRevision: HEAD
+    path: root/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
