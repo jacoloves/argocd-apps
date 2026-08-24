@@ -1,0 +1,26 @@
+# restore-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-restore
+  namespace: bulletin
+spec:
+  restartPolicy: Never
+  containers:
+    - name: restore
+      image: debian:bookworm-slim
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: dst          # 復元先 PVC(書き込み可)
+          mountPath: /dst
+        - name: src          # mgmt host の NFS(読み取り専用)
+          mountPath: /src
+          readOnly: true
+  volumes:
+    - name: dst
+      persistentVolumeClaim:
+        claimName: bulletin-data
+    - name: src
+      nfs:
+        server: 192.168.3.11
+        path: /srv/k8s-migration
