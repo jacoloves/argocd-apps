@@ -1,0 +1,9 @@
+# kube-state-metrics は公式マニフェストをそのまま取り込む。
+# バージョンは明示的に固定する。
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-state-metrics
+resources:
+  - namespace.yaml
+  - https://github.com/kubernetes/kube-state-metrics//examples/standard?ref=v2.20.0
+  - httproute.yaml
