@@ -1,9 +1,15 @@
-# kube-state-metrics は公式マニフェストをそのまま取り込む。
-# バージョンは明示的に固定する。
+# kube-state-metrics の公式マニフェストをリポジトリに取り込んで管理する。
+# リモートベース参照は同期のたびに外部へ取りに行くため採用しない。
+# 更新時は examples/standard から再取得してバージョンを揃える。
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+# 公式マニフェストは kube-system 前提のため、ここで上書きする
 namespace: kube-state-metrics
 resources:
   - namespace.yaml
-  - https://github.com/kubernetes/kube-state-metrics//examples/standard?ref=v2.20.0
+  - service-account.yaml
+  - cluster-role.yaml
+  - cluster-role-binding.yaml
+  - deployment.yaml
+  - service.yaml
   - httproute.yaml
