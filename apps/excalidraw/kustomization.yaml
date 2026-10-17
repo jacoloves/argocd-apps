@@ -1,0 +1,10 @@
+# Excalidraw(個人用・共同編集なし・LAN 内のみ公開)。
+# 新規ファイルを足したらここにも追記すること。
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: excalidraw
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - httproute.yaml
