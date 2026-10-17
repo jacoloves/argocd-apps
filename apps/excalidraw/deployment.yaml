@@ -1,0 +1,57 @@
+# Excalidraw は nginx が静的ファイルを配信するだけの SPA。
+# DB もバックエンドも持たないので PVC は不要。
+# 描画データはブラウザ側(localStorage)に保存されるため、サーバ側のバックアップ対象にもならない。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: excalidraw
+  namespace: excalidraw
+  labels:
+    app.kubernetes.io/name: excalidraw
+spec:
+  # ステートレスだが個人利用なので1つで足りる
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: excalidraw
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: excalidraw
+    spec:
+      # Kubernetes API を使わないのでトークンを Pod に渡さない
+      automountServiceAccountToken: false
+      containers:
+        - name: excalidraw
+          # 公式イメージは latest タグしか提供されていない(バージョンタグなし)。
+          # latest のままだと再取得のたびに中身が変わるため、ダイジェストで固定する。
+          # 更新手順: Docker Hub の excalidraw/excalidraw の latest の
+          # インデックスダイジェストを取得し、下の sha256 を差し替える。
+          # (2026-05-06 時点の latest。amd64 / arm64 / arm/v7 を含むマルチアーキ)
+          image: excalidraw/excalidraw:latest@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9
+          # ダイジェスト固定なので毎回取りに行く必要はない
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          # nginx の静的配信のみなので小さく抑える
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
