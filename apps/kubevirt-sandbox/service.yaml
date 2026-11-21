@@ -11,3 +11,7 @@ spec:
     - name: ssh
       port: 22
       targetPort: 22
+    # Gateway(HTTPRoute) から VM の nginx へ転送する
+    - name: http
+      port: 80
+      targetPort: 80
