@@ -54,5 +54,9 @@ spec:
               # ゲストエージェントを入れると、VMI に IP や OS 情報が表示されるようになる
               packages:
                 - qemu-guest-agent
+                - nginx
               runcmd:
                 - systemctl enable --now qemu-guest-agent
+                # 起動時刻をページに埋め込む。ライブマイグレーションの前後で値が変わらなければ「再起動していない」証拠になる
+                - 'echo "<h1>Hello from KubeVirt VM</h1><p>host: $(hostname)</p><p>booted at: $(date -Is)</p>" > /var/www/html/index.html'
+                - systemctl enable --now nginx
