@@ -6,3 +6,4 @@ resources:
   - virtualmachine.yaml
   - service.yaml
   - httproute.yaml
+  - networkpolicy.yaml
