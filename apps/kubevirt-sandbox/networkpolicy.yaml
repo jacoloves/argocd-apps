@@ -16,3 +16,13 @@ spec:
         - ports:
             - port: "80"
               protocol: TCP
+    # virtctl ssh / port-forward は kube-apiserver → virt-api → VM の Pod IP と届く（Hubble で確認済み）。
+    # SSH は virt-api 経由のみ許可し、利用可否は Kubernetes の RBAC(portforward サブリソース)で制御する
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kubevirt
+            kubevirt.io: virt-api
+      toPorts:
+        - ports:
+            - port: "22"
+              protocol: TCP
