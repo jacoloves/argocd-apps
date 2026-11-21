@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubevirt-sandbox
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jacoloves/argocd-apps.git
+    targetRevision: HEAD
+    path: apps/kubevirt-sandbox
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubevirt-sandbox
+  syncPolicy:
+    automated:
+      prune: true
+      # virtctl stop/start は VM の spec.runStrategy を書き換えるため、
+      # selfHeal を有効にすると ArgoCD が元に戻して VM が勝手に再起動する。検証用なので無効にする
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
